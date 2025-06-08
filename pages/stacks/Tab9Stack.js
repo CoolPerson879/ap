@@ -5,9 +5,8 @@ import {
   StyleSheet,
   Platform,
   SafeAreaView,
-  TouchableOpacity,
-  FlatList,
   Pressable,
+  FlatList,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -18,21 +17,15 @@ const Stack = createNativeStackNavigator();
 const unit1Data = [
   {
     subunit: "Unit 9.1: Advances in Technology and Exchange",
+    badges: ["1.1 Example", "2.1 Example", "14x", "17z", "3.5 Info"],
     events: [
       { subheading: "DUMMY" },
-      {
-        text: "DUMMY",
-        indent: 1,
-      },
-      {
-        text: "DUMMY",
-        indent: 2,
-      },
+      { text: "DUMMY", indent: 1 },
+      { text: "DUMMY", indent: 2 },
       { text: "New technologies transformed the world by:", indent: 2 },
       { text: "Increasing lifespans", indent: 3 },
       { text: "Making energy more accessible", indent: 3 },
       { text: "Connecting economies globally", indent: 3 },
-
       { subheading: "New Communication Technology" },
       {
         text: "Access not evenly distributed; wealthier people/regions gained access first",
@@ -55,7 +48,35 @@ const formatText = (text) => {
   );
 };
 
-const Tab6Screen = () => {
+const getBadgeColor = (text) => {
+  const prefix = text.slice(0, 2);
+  switch (prefix) {
+    case "1.":
+      return "#d048a8";
+    case "2.":
+      return "#5172aa";
+    case "3.":
+      return "#d57443";
+    case "4.":
+      return "#fcb71c";
+    case "5.":
+      return "#007780";
+    case "6.":
+      return "#e67b32";
+    case "12":
+      return "#af52de";
+    case "14":
+      return "#28a745";
+    case "17":
+      return "#ff3b30";
+    case "19":
+      return "#ffc107";
+    default:
+      return "#007bff";
+  }
+};
+
+const Tab1Screen = () => {
   const navigation = useNavigation();
   const [selectedUnitIndex, setSelectedUnitIndex] = React.useState(0);
 
@@ -91,11 +112,43 @@ const Tab6Screen = () => {
         ListHeaderComponent={() => (
           <>
             <View style={styles.header}>
-              <Text style={styles.title}>Unit 9: Globalization</Text>
+              <Text style={styles.title}>Unit 1: The Global Tapestry</Text>
               {renderButtons()}
             </View>
             <View style={styles.subunitContainer}>
               <Text style={styles.subunitTitle}>{selectedUnit.subunit}</Text>
+              <View style={styles.badgeContainer}>
+                {selectedUnit.badges?.map((badge, index) =>
+                  // Pressable only if second char is "."
+                  badge[1] === "." ? (
+                    <Pressable
+                      key={index}
+                      onPress={() =>
+                        navigation.getParent()?.navigate("Drawer", {
+                          screen: "Themes and Historical Thinking Skills",
+                        })
+                      }
+                      style={[
+                        styles.badge,
+                        { backgroundColor: getBadgeColor(badge) },
+                      ]}
+                    >
+                      <Text style={styles.badgeText}>{badge}</Text>
+                    </Pressable>
+                  ) : (
+                    <View
+                      key={index}
+                      style={[
+                        styles.badge,
+                        { backgroundColor: getBadgeColor(badge) },
+                      ]}
+                    >
+                      <Text style={styles.badgeText}>{badge}</Text>
+                    </View>
+                  )
+                )}
+              </View>
+
               {selectedUnit.events.map((event, idx) =>
                 event.subheading ? (
                   <Text key={idx} style={styles.subheading}>
@@ -124,7 +177,7 @@ const Tab6Screen = () => {
   );
 };
 
-export default function Tab6Stack() {
+export default function Tab1Stack() {
   const navigation = useNavigation();
 
   return (
@@ -142,7 +195,7 @@ export default function Tab6Stack() {
         tabBarStyle: { display: "none" },
       }}
     >
-      <Stack.Screen name="Tab1Main" component={Tab6Screen} />
+      <Stack.Screen name="Tab1Main" component={Tab1Screen} />
     </Stack.Navigator>
   );
 }
@@ -169,11 +222,23 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     ...(Platform.OS === "ios" && { fontFamily: "Avenir" }),
   },
-  title2: {
-    fontSize: 20,
-    textAlign: "center",
-    fontWeight: "bold",
-    ...(Platform.OS === "ios" && { fontFamily: "Avenir" }),
+  badgeContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 4,
+    marginBottom: 10,
+  },
+  badge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 14,
+    marginRight: 4,
+    marginBottom: 4,
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 15,
+    fontWeight: "600",
   },
   subunitContainer: {
     marginBottom: 20,
@@ -206,9 +271,6 @@ const styles = StyleSheet.create({
     color: "#555",
     marginBottom: 5,
     ...(Platform.OS === "ios" && { fontFamily: "Avenir" }),
-  },
-  indented: {
-    paddingLeft: 16,
   },
   bold: {
     fontWeight: "bold",
