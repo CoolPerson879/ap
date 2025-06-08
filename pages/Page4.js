@@ -8,9 +8,9 @@ import {
   Platform,
   Pressable,
 } from "react-native";
+import { tableDataA, tableDataB } from "./page4tables.js"
 
 const Page4Screen = () => {
-import { tableDataA, tableDataB } from "./page4tables.js"
 
   const [selectedTable, setSelectedTable] = useState("Themes");
   const isTableB = selectedTable === "Thinking Skills";
@@ -252,8 +252,3 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === "ios" ? "Avenir" : undefined,
   },
 });
-
-swap the order of the title text box and the pressables
-
-
-
