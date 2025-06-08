@@ -14,26 +14,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 const Stack = createNativeStackNavigator();
 
-const unit1Data = [
-  {
-    subunit: "Unit 9.1: Advances in Technology and Exchange",
-    badges: ["1.1 Example", "2.1 Example", "14x", "17z", "3.5 Info"],
-    events: [
-      { subheading: "DUMMY" },
-      { text: "DUMMY", indent: 1 },
-      { text: "DUMMY", indent: 2 },
-      { text: "New technologies transformed the world by:", indent: 2 },
-      { text: "Increasing lifespans", indent: 3 },
-      { text: "Making energy more accessible", indent: 3 },
-      { text: "Connecting economies globally", indent: 3 },
-      { subheading: "New Communication Technology" },
-      {
-        text: "Access not evenly distributed; wealthier people/regions gained access first",
-        indent: 1,
-      },
-    ],
-  },
-];
+import { unit9Data } from "../unitdata";
 
 const formatText = (text) => {
   const parts = text.split(/(\*\*.*?\*\*)/);
@@ -72,7 +53,7 @@ const getBadgeColor = (text) => {
     case "19":
       return "#ffc107";
     default:
-      return "#007bff";
+      return "#000";
   }
 };
 
@@ -82,7 +63,7 @@ const Tab1Screen = () => {
 
   const renderButtons = () => (
     <View style={styles.buttonRow}>
-      {unit1Data.map((unit, index) => (
+      {unit9Data.map((unit, index) => (
         <Pressable
           key={index}
           onPress={() => setSelectedUnitIndex(index)}
@@ -104,7 +85,7 @@ const Tab1Screen = () => {
     </View>
   );
 
-  const selectedUnit = unit1Data[selectedUnitIndex];
+  const selectedUnit = unit9Data[selectedUnitIndex];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -112,7 +93,7 @@ const Tab1Screen = () => {
         ListHeaderComponent={() => (
           <>
             <View style={styles.header}>
-              <Text style={styles.title}>Unit 1: The Global Tapestry</Text>
+              <Text style={styles.title}>Unit 9: Globalization</Text>
               {renderButtons()}
             </View>
             <View style={styles.subunitContainer}>
@@ -237,7 +218,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     color: "#fff",
-    fontSize: 15,
+    fontSize: 12,
     fontWeight: "600",
   },
   subunitContainer: {
