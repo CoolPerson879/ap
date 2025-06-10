@@ -7,6 +7,7 @@ import Page1 from "./pages/Page1";
 import Page2 from "./pages/Page2";
 import Page3 from "./pages/Page3";
 import Page4Screen from "./pages/Page4";
+import Help from "./pages/Help";
 
 import Tab1Stack from "./pages/stacks/Tab1Stack";
 import Tab2Stack from "./pages/stacks/Tab2Stack";
@@ -25,12 +26,13 @@ function DrawerNavigator() {
   return (
     <Drawer.Navigator screenOptions={{ headerShown: false }}>
       <Drawer.Screen name="Big Events by Unit" component={Page1} />
-      <Drawer.Screen name="Course Content" component={Page2} />
-      <Drawer.Screen name="Practice" component={Page3} />
+      {/* <Drawer.Screen name="Course Content" component={Page2} /> */}
+      {/* <Drawer.Screen name="Practice" component={Page3} /> */}
       <Drawer.Screen
         name="Themes and Historical Thinking Skills"
         component={Page4Screen}
       />
+      <Drawer.Screen name="Help" component={Help} />
     </Drawer.Navigator>
   );
 }

@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   FlatList,
+  Pressable,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -16,6 +17,7 @@ const units = [
   {
     unit: "Unit 1: The Global Tapestry",
     dates: "1200-1450",
+    name: "Tab1Stack",
     style: 1,
     percentage: "8-10", // Add percentage value here
     events: [
@@ -29,6 +31,7 @@ const units = [
   {
     unit: "Unit 2: Networks of Exchange",
     dates: "1200-1450",
+    name: "Tab2Stack",
     style: 1,
     percentage: "8-10", // Add percentage value here
     events: [
@@ -43,6 +46,7 @@ const units = [
   {
     unit: "Unit 3: Land-Based Empires",
     dates: "1450-1750",
+    name: "Tab3Stack",
     style: 2,
     percentage: "12-15", // Add percentage value here
     events: [
@@ -54,6 +58,7 @@ const units = [
   {
     unit: "Unit 4: Maritime Empires",
     dates: "1450-1750",
+    name: "Tab4Stack",
     style: 2,
     percentage: "12-15", // Add percentage value here
     events: [
@@ -66,6 +71,7 @@ const units = [
   {
     unit: "Unit 5: Revolutions",
     dates: "1750-1900",
+    name: "Tab5Stack",
     style: 3,
     percentage: "12-15", // Add percentage value here
     events: [
@@ -78,6 +84,7 @@ const units = [
   {
     unit: "Unit 6: Consequences of Industrialization",
     dates: "1750-1900",
+    name: "Tab6Stack",
     style: 3,
     percentage: "12-15", // Add percentage value here
     events: [
@@ -90,6 +97,7 @@ const units = [
   {
     unit: "Unit 7: Global Conflict",
     dates: "1900-present",
+    name: "Tab7Stack",
     style: 4,
     percentage: "8-10", // Add percentage value here
     events: [
@@ -103,6 +111,7 @@ const units = [
   {
     unit: "Unit 8: Cold War and Decolonization",
     dates: "1900-present",
+    name: "Tab8Stack",
     style: 4,
     percentage: "8-10", // Add percentage value here
     events: [
@@ -114,6 +123,7 @@ const units = [
   {
     unit: "Unit 9: Globalization",
     dates: "1900-present",
+    name: "Tab9Stack",
     style: 4,
     percentage: "8-10", // Add percentage value here
     events: [
@@ -127,8 +137,8 @@ const units = [
   },
 ];
 
-export default function Page1() {
-  const navigation = useNavigation();
+export default function Page1({navigation}) {
+  const drawer = useNavigation();
 
   // Function to get the date badge style based on the unit's style value
   const getDateBadgeStyle = (style) => {
@@ -154,34 +164,51 @@ export default function Page1() {
           <View style={styles.header}>
             <TouchableOpacity
               style={styles.icon}
-              onPress={() => navigation.openDrawer()}
+              onPress={() => drawer.openDrawer()}
             >
               <Ionicons name="menu" size={28} />
             </TouchableOpacity>
-
+            <TouchableOpacity
+              style={{ position: "absolute", right: 12, top: 4 }}
+              onPress={() => {
+              // You can replace this with your help action, e.g., open a modal or navigate
+              navigation.navigate("Help");
+              }}
+              accessibilityLabel="Help"
+            >
+              <Ionicons name="help-circle-outline" size={28} color="#000" />
+            </TouchableOpacity>
             <Text style={styles.text}>Big Events by Unit</Text>
           </View>
         )}
         renderItem={({ item, index }) => (
-          <View key={index} style={styles.unitContainer}>
-            <Text style={styles.unitTitle}>{item.unit}</Text>
-            <View style={styles.badgeContainer}>
-              {/* Dynamically assign date badge style */}
-              <View style={getDateBadgeStyle(item.style)}>
-                <Text style={styles.dateText}>{item.dates}</Text>
-              </View>
+          <Pressable onPress={() => navigation.navigate(item.name)}>
+            <View key={index} style={styles.unitContainer}>
+              <Text style={styles.unitTitle}>{item.unit}</Text>
+              <View style={styles.badgeContainer}>
+                {/* Dynamically assign date badge style */}
+                <View style={getDateBadgeStyle(item.style)}>
+                  <Text style={styles.dateText}>{item.dates}</Text>
+                </View>
 
-              {/* New percentage badge next to the date badge */}
-              <View style={styles.percentageBadge}>
-                <Text style={styles.percentageText}>{item.percentage}%</Text>
+                {/* New percentage badge next to the date badge */}
+                <View style={styles.percentageBadge}>
+                  <Text style={styles.percentageText}>{item.percentage}%</Text>
+                </View>
+              </View>
+              {item.events.map((event, idx) => (
+                <Text key={idx} style={styles.eventItem}>
+                  - {event}
+                </Text>
+              ))}
+              <View>
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
+                  <Text style={styles.link}>Unit {index + 1} Content </Text>
+                  <Ionicons name="chevron-forward" size={20} color="#007bff" />
+                </View>
               </View>
             </View>
-            {item.events.map((event, idx) => (
-              <Text key={idx} style={styles.eventItem}>
-                - {event}
-              </Text>
-            ))}
-          </View>
+          </Pressable>
         )}
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.scrollViewContent}
@@ -195,6 +222,15 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     paddingTop: 10,
+  },
+  link:{
+    color: "#007bff", // Bootstrap primary color
+    paddingTop: 10, 
+    marginRight: -7,
+    fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 10, // Space between links
+    ...(Platform.OS === "ios" && { fontFamily: "Avenir" }),
   },
   header: {
     alignItems: "center",

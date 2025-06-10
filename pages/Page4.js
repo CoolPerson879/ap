@@ -9,8 +9,11 @@ import {
   Pressable,
 } from "react-native";
 import { tableDataA, tableDataB } from "./page4tables.js"
+import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 
 const Page4Screen = () => {
+  const navigation = useNavigation();
 
   const [selectedTable, setSelectedTable] = useState("Themes");
   const isTableB = selectedTable === "Thinking Skills";
@@ -18,30 +21,52 @@ const Page4Screen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.switcherRow}>
-        {["Themes", "Thinking Skills"].map((t) => (
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "flex-start", // changed from "center" to "flex-start"
+            justifyContent: "flex-start", // ensure left alignment
+            marginTop: 0, // remove extra top margin
+          }}
+        >
           <Pressable
-            key={t}
-            onPress={() => setSelectedTable(t)}
-            style={[
-              styles.switcherButton,
-              selectedTable === t && styles.switcherButtonActive,
-            ]}
+            onPress={() => {
+              navigation.openDrawer();
+            }}
+            style={{
+              padding: 10,
+              marginLeft: 10,
+              marginRight: 10,
+            }}
+            accessibilityLabel="Open menu"
           >
-            <Text
+            <Ionicons name="menu" size={28} />
+          </Pressable>
+        </View>
+        <Text style={styles.title}>{selectedTable}</Text>
+        <View style={styles.switcherRow}>
+          {["Themes", "Thinking Skills"].map((t) => (
+            <Pressable
+              key={t}
+              onPress={() => setSelectedTable(t)}
               style={[
-                styles.switcherText,
-                selectedTable === t && styles.switcherTextActive,
+                styles.switcherButton,
+                selectedTable === t && styles.switcherButtonActive,
               ]}
             >
-              {t}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
+              <Text
+                style={[
+                  styles.switcherText,
+                  selectedTable === t && styles.switcherTextActive,
+                ]}
+              >
+                {t}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>{selectedTable}</Text>
         <View style={styles.tableWrapper}>
           <View style={styles.table}>
             {data.map((row, i) => (
@@ -129,7 +154,8 @@ const styles = StyleSheet.create({
   switcherRow: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 12,
+    marginTop: -12,
+    marginBottom: 16,
   },
   switcherButton: {
     paddingVertical: 6,

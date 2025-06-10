@@ -100,7 +100,6 @@ const Tab1Screen = () => {
               <Text style={styles.subunitTitle}>{selectedUnit.subunit}</Text>
               <View style={styles.badgeContainer}>
                 {selectedUnit.badges?.map((badge, index) =>
-                  // Pressable only if second char is "."
                   badge[1] === "." ? (
                     <Pressable
                       key={index}
@@ -158,12 +157,15 @@ const Tab1Screen = () => {
   );
 };
 
+
 export default function Tab1Stack() {
   const navigation = useNavigation();
 
   return (
     <Stack.Navigator
       screenOptions={{
+        headerTitle: "",
+        tabBarStyle: { display: "none" },
         headerLeft: () => (
           <Pressable
             onPress={() => navigation.goBack()}
@@ -172,8 +174,14 @@ export default function Tab1Stack() {
             <Ionicons name="arrow-back" size={24} />
           </Pressable>
         ),
-        headerTitle: "",
-        tabBarStyle: { display: "none" },
+        headerRight: () => (
+          <Pressable
+            onPress={() => navigation.getParent()?.navigate("Drawer", "Help")}
+            style={styles.backButton}
+          >
+            <Ionicons name="help-circle-outline" size={24} />
+          </Pressable>
+        ),
       }}
     >
       <Stack.Screen name="Tab1Main" component={Tab1Screen} />
