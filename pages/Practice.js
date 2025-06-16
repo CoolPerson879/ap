@@ -1,237 +1,261 @@
-import React from "react"; 
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  Platform,
+} from "react-native";
+import { PracticeQuestions } from "./PracticeQuestions";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import {
-View,
-Text,
-StyleSheet,
-Platform,
-SafeAreaView,
-TouchableOpacity,
-FlatList,
-Pressable,
-} from "react-native";
 
-// Dummy data for practice
-const practiceItems = [
-{
-    title: "Sample Category 1",
-    subtitle: "Demo Content",
-    content: "DemoStack1",
-    style: 1,
-    percentage: "15-20",
-    items: [
-        "First practice item example",
-        "Second practice item example", 
-        "Third practice item example",
-    ],
-},
-{
-    title: "Sample Category 2", 
-    subtitle: "Test Material",
-    content: "DemoStack2",
-    style: 2,
-    percentage: "10-15",
-    items: [
-        "Another practice example",
-        "More sample content here",
-        "Additional test material",
-    ],
-},
-{
-    title: "Sample Category 3",
-    subtitle: "Practice Data", 
-    content: "DemoStack3",
-    style: 3,
-    percentage: "20-25",
-    items: [
-        "Example practice content",
-        "Sample learning material",
-        "Demo educational content",
-    ],
-},
-];
+function shuffleArray(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
-export default function Practice({navigation}) {
-const drawer = useNavigation();
+export default function Practice() {
+  const drawer = useNavigation();
+  const [shuffledQuestions, setShuffledQuestions] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [shuffledOptions, setShuffledOptions] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [answerStatus, setAnswerStatus] = useState(null); // "correct" or "wrong"
 
-const getDateBadgeStyle = (style) => {
-    switch (style) {
-        case 1:
-            return styles.dateBadge1;
-        case 2:
-            return styles.dateBadge2;
-        case 3:
-            return styles.dateBadge3;
-        case 4:
-            return styles.dateBadge4;
-        default:
-            return styles.dateBadge1;
+  useEffect(() => {
+    // Shuffle the questions on component mount
+    const questions = shuffleArray(PracticeQuestions);
+    setShuffledQuestions(questions);
+  }, []);
+
+  useEffect(() => {
+    if (shuffledQuestions.length > 0) {
+      // Reset selection for each new question
+      setSelectedOption(null);
+      setAnswerStatus(null);
+
+      const currentQuestion = shuffledQuestions[currentQuestionIndex];
+      const options = [
+        currentQuestion.answer,
+        currentQuestion.option2,
+        currentQuestion.option3,
+        currentQuestion.option4,
+      ];
+      setShuffledOptions(shuffleArray(options));
     }
-};
+  }, [shuffledQuestions, currentQuestionIndex]);
 
-return (
-    <SafeAreaView style={styles.container}>
-        <FlatList
-            data={practiceItems}
-            ListHeaderComponent={() => (
-                <View style={styles.header}>
-                    <TouchableOpacity
-                        style={styles.icon}
-                        onPress={() => drawer.openDrawer()}
-                    >
-                        <Ionicons name="menu" size={28} />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={{ position: "absolute", right: 12, top: 4 }}
-                        onPress={() => {
-                            navigation.navigate("Help");
-                        }}
-                        accessibilityLabel="Help"
-                    >
-                        <Ionicons name="help-circle-outline" size={28} color="#000" />
-                    </TouchableOpacity>
-                    <Text style={styles.text}>Practice Page</Text>
-                </View>
-            )}
-            renderItem={({ item, index }) => (
-                <Pressable onPress={() => navigation.navigate(item.content)}>
-                    <View key={index} style={styles.unitContainer}>
-                        <Text style={styles.unitTitle}>{item.title}</Text>
-                        <View style={styles.badgeContainer}>
-                            <View style={getDateBadgeStyle(item.style)}>
-                                <Text style={styles.dateText}>{item.subtitle}</Text>
-                            </View>
-                            <View style={styles.percentageBadge}>
-                                <Text style={styles.percentageText}>{item.percentage}%</Text>
-                            </View>
-                        </View>
-                        {item.items.map((listItem, idx) => (
-                            <Text key={idx} style={styles.eventItem}>
-                                - {listItem}
-                            </Text>
-                        ))}
-                        <View>
-                            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
-                                <Text style={styles.link}>Category {index + 1} Content </Text>
-                                <Ionicons name="chevron-forward" size={20} color="#007bff" />
-                            </View>
-                        </View>
-                    </View>
-                </Pressable>
-            )}
-            keyExtractor={(item, index) => index.toString()}
-            contentContainerStyle={styles.scrollViewContent}
-        />
+  const handleOptionPress = (option) => {
+    // If already answered correctly, do nothing.
+    if (answerStatus === "correct") return;
+
+    if (option === shuffledQuestions[currentQuestionIndex].answer) {
+      setSelectedOption(option);
+      setAnswerStatus("correct");
+    } else {
+      setSelectedOption(option);
+      setAnswerStatus("wrong");
+    }
+  };
+
+  const goToNextQuestion = () => {
+    if (currentQuestionIndex + 1 < shuffledQuestions.length) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      // Optionally restart the quiz or handle completion.
+      // Here we simply reset to the first question.
+      setCurrentQuestionIndex(0);
+    }
+  };
+
+  if (shuffledQuestions.length === 0) return null;
+
+  const currentQuestion = shuffledQuestions[currentQuestionIndex];
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.screenWrapper}>
+        <View style={styles.menuRow}>
+          <TouchableOpacity
+            style={styles.menuButton}
+            onPress={() => drawer.openDrawer()}
+          >
+            <Ionicons name="menu" size={28} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.titlesWrapper}>
+          <Text style={styles.title}>Content Review</Text>
+          <Text style={styles.subtitle}>
+            Test your content recall with these non AP style questions! {"\n"}{" "}
+            For AP Style Questions, go to Stimulus Based Practice
+          </Text>
+        </View>
+        <View style={styles.container}>
+          <View style={styles.contentWrapper}>
+            <Text style={styles.questionText}>{currentQuestion.question}</Text>
+            {shuffledOptions.map((option, index) => {
+              const isSelected = option === selectedOption;
+              let borderColor = "#ccc";
+              if (isSelected) {
+                borderColor =
+                  option === currentQuestion.answer ? "#0f0" : "#f00";
+              }
+              return (
+                <TouchableOpacity
+                  key={index}
+                  style={[styles.optionButton, { borderColor }]}
+                  onPress={() => handleOptionPress(option)}
+                >
+                  <View style={styles.optionContent}>
+                    <Text style={styles.optionTextCentered}>{option}</Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+            <View style={styles.nextButtonWrapper}>
+              {/* Move next button inside content for better control */}
+              {answerStatus === "correct" && (
+                <TouchableOpacity
+                  style={styles.nextButton}
+                  onPress={goToNextQuestion}
+                >
+                  <Text style={styles.nextButtonText}>Next Question</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        </View>
+      </View>
     </SafeAreaView>
-);
+  );
 }
 
 const styles = StyleSheet.create({
-container: {
+  safeArea: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 10,
-},
-link:{
-    color: "#007bff",
-    paddingTop: 10, 
-    marginRight: -7,
-    fontWeight: "bold",
-    fontSize: 16,
-    marginBottom: 10,
-    ...(Platform.OS === "ios" && { fontFamily: "Avenir" }),
-},
-header: {
-    alignItems: "center",
-    marginBottom: 20,
-},
-icon: {
-    alignSelf: "flex-start",
-    marginTop: 4,
-    paddingLeft: 12,
-},
-text: {
-    marginTop: 20,
-    fontSize: 20,
-    textAlign: "center",
-    fontWeight: "bold",
-    ...(Platform.OS === "ios" && { fontFamily: "Avenir" }),
-},
-unitContainer: {
-    marginBottom: 20,
-    padding: 16,
     backgroundColor: "#fff",
+  },
+  screenWrapper: {
+    flex: 1,
+    backgroundColor: "#fff",
+    paddingTop: 40, // for status bar spacing
+  },
+  titlesWrapper: {
+    width: "100%",
+    alignItems: "center",
+    marginBottom: 2,
+    marginTop: -28, // move higher up
+    marginBottom: 28,
+    position: "relative",
+    top: -8,
+  },
+  title: {
+    fontSize: 20, // smaller
+    fontWeight: "700",
+    textAlign: "center",
+    marginBottom: 2,
+    fontFamily: Platform.OS === "ios" ? "Avenir" : undefined,
+    color: "#222",
+  },
+  subtitle: {
+    fontSize: 13, // smaller
+    color: "#666",
+    textAlign: "center",
+    marginBottom: 2, // less space
+    fontFamily: Platform.OS === "ios" ? "Avenir" : undefined,
+  },
+  container: {
+    flex: 1,
+    paddingVertical: 0, // remove extra vertical padding
+    paddingHorizontal: 10, // less horizontal padding
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+  menuRow: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginBottom: 10,
+    marginTop: 0,
+    paddingHorizontal: 10,
+  },
+  menuButton: {
+    padding: 8,
+  },
+  questionText: {
+    fontSize: 22,
+    marginBottom: 30,
+    textAlign: "center",
+    fontWeight: "500",
+    fontFamily: Platform.OS === "ios" ? "Avenir" : undefined,
+  },
+  optionButton: {
+    backgroundColor: "#fff",
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    marginVertical: 8,
     borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    marginHorizontal: 8,
-},
-unitTitle: {
+    borderWidth: 2,
+    alignSelf: "stretch",
+  },
+  optionContent: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  optionTextCentered: {
+    fontSize: 18,
+    textAlign: "center",
+    width: "100%",
+    fontWeight: "400",
+    fontFamily: Platform.OS === "ios" ? "Avenir" : undefined,
+  },
+  iconWrapper: {
+    width: 28, // Fixed width for icon area
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  icon: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#2a2a2a",
-    marginBottom: 8,
-    ...(Platform.OS === "ios" && { fontFamily: "Avenir" }),
-},
-badgeContainer: {
-    flexDirection: "row",
-    marginBottom: 10,
-},
-dateBadge1: {
-    backgroundColor: "#af52de",
-    borderRadius: 20,
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-    marginRight: 8,
-},
-dateBadge2: {
-    backgroundColor: "#28a745",
-    borderRadius: 20,
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-    marginRight: 8,
-},
-dateBadge3: {
-    backgroundColor: "#ff3b30",
-    borderRadius: 20,
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-    marginRight: 8,
-},
-dateBadge4: {
-    backgroundColor: "#ffc107",
-    borderRadius: 20,
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-    marginRight: 8,
-},
-dateText: {
+    color: "#333",
+  },
+  contentWrapper: {
+    width: "100%",
+    alignItems: "center",
+    marginTop: 0, // move content up
+    flexGrow: 1,
+    justifyContent: "flex-start",
+  },
+  nextButtonWrapper: {
+    minHeight: 60,
+    justifyContent: "flex-end",
+    alignItems: "center",
+    width: "100%",
+    marginTop: 10,
+    marginBottom: 0,
+  },
+  nextButton: {
+    marginTop: 20,
+    backgroundColor: "#4caf50",
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: "center",
+    alignSelf: "stretch",
+  },
+  nextButtonText: {
+    fontSize: 18,
     color: "#fff",
-    fontSize: 12,
-    fontWeight: "bold",
-    ...(Platform.OS === "ios" && { fontFamily: "Avenir" }),
-},
-percentageBadge: {
-    backgroundColor: "#007bff",
-    borderRadius: 20,
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-},
-percentageText: {
-    color: "#fff",
-    fontSize: 12,
-    fontWeight: "bold",
-},
-eventItem: {
-    fontSize: 16,
-    color: "#555",
-    marginBottom: 5,
-    ...(Platform.OS === "ios" && { fontFamily: "Avenir" }),
-},
-scrollViewContent: {
-    paddingBottom: 20,
-},
+    fontWeight: "500",
+    textAlign: "center",
+    fontFamily: Platform.OS === "ios" ? "Avenir" : undefined,
+  },
 });

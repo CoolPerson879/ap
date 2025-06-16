@@ -15,15 +15,13 @@ export default function Page2({ navigation }) {
   const drawer = useNavigation();
 
   const tabs = [
-    { name: "Tab1Stack", label: "Tab 1" },
-    { name: "Tab2Stack", label: "Tab 2" },
-    { name: "Tab3Stack", label: "Tab 3" },
-    { name: "Tab4Stack", label: "Tab 4" },
-    { name: "Tab5Stack", label: "Tab 5" },
-    { name: "Tab6Stack", label: "Tab 6" },
-    { name: "Tab7Stack", label: "Tab 7" },
-    { name: "Tab8Stack", label: "Tab 8" },
-    { name: "Tab9Stack", label: "Tab 9" },
+    { name: "DBQSet1", label: "DBQ Set 1" },
+    { name: "DBQSet2", label: "DBQ Set 2" },
+    { name: "LEQSet1", label: "LEQ Set 1" },
+    { name: "LEQSet2", label: "LEQ Set 2" },
+    { name: "LEQSet3", label: "LEQ Set 3" },
+    { name: "LEQSet4", label: "LEQ Set 4" },
+    { name: "LEQSet5", label: "LEQ Set 5" },
   ];
 
   return (
@@ -31,7 +29,11 @@ export default function Page2({ navigation }) {
       <TouchableOpacity style={styles.icon} onPress={() => drawer.openDrawer()}>
         <Ionicons name="menu" size={28} />
       </TouchableOpacity>
-      <Text style={styles.title}>Units:</Text>
+      <Text style={styles.title}>Free Response Sets:</Text>
+      <Text style={styles.subtitle}>
+        Choose a set below to practice different types of free response
+        questions.
+      </Text>
       {tabs.map((tab, index) => (
         <Pressable key={index} onPress={() => navigation.navigate(tab.name)}>
           <Text style={styles.tab}>{tab.label}</Text>
@@ -56,6 +58,17 @@ const styles = StyleSheet.create({
     fontSize: 22,
     marginVertical: 16,
     textAlign: "center",
+    ...(Platform.OS === "ios" && { fontFamily: "Avenir" }),
+    fontWeight: "bold",
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "center",
+    marginBottom: 12,
+    marginTop: -8,
+    padding: 20,
+    fontWeight: "100",
     ...(Platform.OS === "ios" && { fontFamily: "Avenir" }),
   },
   tab: {
